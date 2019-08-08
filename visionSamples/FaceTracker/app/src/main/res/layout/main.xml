@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/topLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true">
+  <ImageView
+      android:id="@+id/imageview"
+      android:layout_centerHorizontal="true"
+      android:layout_width="80dp"
+      android:layout_height="80dp" />
+
+
 
   <com.google.android.gms.samples.vision.face.facetracker.ui.camera.CameraSourcePreview
       android:id="@+id/preview"
@@ -20,4 +27,4 @@
 
   </com.google.android.gms.samples.vision.face.facetracker.ui.camera.CameraSourcePreview>
 
-</LinearLayout>
+</RelativeLayout>

@@ -22,22 +22,26 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.vision.CameraSource;
+//import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.samples.vision.face.facetracker.ui.camera.CameraSourcePreview;
 import com.google.android.gms.samples.vision.face.facetracker.ui.camera.GraphicOverlay;
+import com.google.android.gms.samples.vision.face.facetracker.ui.camera.CameraSource;
 
 import java.io.IOException;
 
@@ -56,7 +60,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
-
+    ImageView imageView;
     //==============================================================================================
     // Activity Methods
     //==============================================================================================
@@ -72,6 +76,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
 
+
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
@@ -80,6 +85,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         } else {
             requestCameraPermission();
         }
+        imageView = (ImageView) findViewById(R.id.imageview);
+
+
     }
 
     /**
@@ -120,13 +128,21 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * at long distances.
      */
     private void createCameraSource() {
-
+//        com.google.android.gms.vision.Frame frame;
+//        frame.getBitmap();
+//        Frame.Metadata metadata = frame.getMetadata();
         Context context = getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .build();
 
-        detector.setProcessor(
+        final MyFaceDetecter myFaceDetecter = new MyFaceDetecter(detector);
+
+//        detector.setProcessor(
+//                new MultiProcessor.Builder<>(new GraphicFaceTrackerFactory())
+//                        .build());
+
+        myFaceDetecter.setProcessor(
                 new MultiProcessor.Builder<>(new GraphicFaceTrackerFactory())
                         .build());
 
@@ -141,12 +157,28 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             // download completes on device.
             Log.w(TAG, "Face detector dependencies are not yet available.");
         }
-
-        mCameraSource = new CameraSource.Builder(context, detector)
+        mCameraSource = new CameraSource.Builder(context, myFaceDetecter)
                 .setRequestedPreviewSize(640, 480)
-                .setFacing(CameraSource.CAMERA_FACING_BACK)
+                .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedFps(30.0f)
                 .build();
+
+
+        myFaceDetecter.setCallback(new MyFaceDetecter.Callback() {
+            @Override
+            public void onCallback() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        Log.i("yyyyy", String.valueOf(myFaceDetecter.getBit()));
+                        imageView.setImageBitmap(myFaceDetecter.getBit());
+                    }
+                });
+
+
+
+            }
+        });
     }
 
     /**

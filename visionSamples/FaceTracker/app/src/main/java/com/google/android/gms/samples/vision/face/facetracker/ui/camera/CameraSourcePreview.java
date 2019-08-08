@@ -24,7 +24,7 @@ import android.view.SurfaceView;
 import android.view.ViewGroup;
 
 import com.google.android.gms.common.images.Size;
-import com.google.android.gms.vision.CameraSource;
+//import com.google.android.gms.vision.CameraSource;
 
 import java.io.IOException;
 
@@ -154,8 +154,12 @@ public class CameraSourcePreview extends ViewGroup {
             childWidth = (int)(((float) layoutHeight / (float) height) * width);
         }
 
+        int start_height = (int)((bottom - childHeight)/2);
+        int start_weight = (int)((right - childWidth)/2);
+
         for (int i = 0; i < getChildCount(); ++i) {
-            getChildAt(i).layout(0, 0, childWidth, childHeight);
+//            getChildAt(i).layout(0, 0, childWidth, childHeight);
+            getChildAt(i).layout(0 + start_weight, start_height, childWidth + start_weight, childHeight + start_height);
         }
 
         try {
